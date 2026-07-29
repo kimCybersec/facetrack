@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # .../backend
 class Settings:
     # --- Database ---
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "facetrack")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "facetrack")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "Rkim2346?")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "facetrack")
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "localhost")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")

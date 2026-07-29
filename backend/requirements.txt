@@ -1,0 +1,14 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+sqlalchemy==2.0.35
+psycopg[binary]==3.2.2
+pgvector==0.3.4
+redis==5.0.8
+python-multipart==0.0.9
+requests==2.32.3
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+torch==2.4.1
+facenet-pytorch==2.5.3
+ultralytics==8.2.100
+pydantic==2.9.2

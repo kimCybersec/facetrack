@@ -1,0 +1,81 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: facetrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-facetrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-facetrack}
+      POSTGRES_DB: ${POSTGRES_DB:-facetrack}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-facetrack}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: facetrack-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: facetrack-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-facetrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-facetrack}
+      POSTGRES_DB: ${POSTGRES_DB:-facetrack}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DISCOVERY_SUBNET: ${DISCOVERY_SUBNET:-192.168.1.0/24}
+      DEFAULT_CAMERA_USER: ${DEFAULT_CAMERA_USER:-admin}
+      DEFAULT_CAMERA_PASSWORD: ${DEFAULT_CAMERA_PASSWORD:-}
+      FACE_MATCH_THRESHOLD: ${FACE_MATCH_THRESHOLD:-0.65}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+    network_mode: "host"
+    volumes:
+      - enrollment_photos:/app/storage/enrollment_photos
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: facetrack-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+  enrollment_photos:

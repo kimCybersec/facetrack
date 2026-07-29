@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-body {
+  font-family: var(--font-body);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: #3ecf8e;
+  color: #0a0d12;
+}
+
+@keyframes flap-in {
+  0% {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+}
+
+.flap-enter {
+  animation: flap-in 320ms ease-out;
+  transform-origin: top;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flap-enter {
+    animation: none;
+  }
+}

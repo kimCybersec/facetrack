@@ -15,17 +15,21 @@ from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from backend.config import settings
-from backend.database.connection import init_db, get_db, session_scope
-from backend.database.models import Camera, Student, AccessLog
-from backend.services.camera_manager import (
+from config import settings
+from database.connection import init_db, get_db, session_scope
+from database.models import Camera, Student, AccessLog
+from services.camera_manager import (
+    discover_specific_camera,
     run_discovery_and_upsert,
     set_camera_active,
     resume_active_cameras,
+    register_manual_camera,
+    build_nvr_channel_rtsp_url,
 )
-from backend.ai.embedding import FaceEmbedder
-from backend.ai.detection import FaceDetector
-from backend.ai.pipeline import broadcaster
+from pydantic import BaseModel
+from ai.embedding import FaceEmbedder
+from ai.detection import FaceDetector
+from ai.pipeline import broadcaster
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("facetrack.main")
@@ -85,6 +89,51 @@ def toggle_camera(camera_id: str, active: bool, db: Session = Depends(get_db)):
         camera = set_camera_active(db, camera_id, active)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
+    return camera.to_dict()
+
+
+class ManualNvrChannelRequest(BaseModel):
+    name: str
+    nvr_ip: str
+    channel: int
+    username: str
+    password: str
+    port: int = 554
+    main_stream: bool = True
+    location_label: str | None = None
+
+
+@app.post("/api/cameras/manual")
+def add_manual_camera(payload: ManualNvrChannelRequest, db: Session = Depends(get_db)):
+    """Registers a single camera channel that lives behind an NVR's own
+    PoE ports (and is therefore invisible to ONVIF WS-Discovery). Builds
+    the channel-specific RTSP URL using the common
+    /Streaming/Channels/<channel><01|02> convention."""
+    rtsp_url = build_nvr_channel_rtsp_url(
+        nvr_ip=payload.nvr_ip,
+        channel=payload.channel,
+        username=payload.username,
+        password=payload.password,
+        port=payload.port,
+        main_stream=payload.main_stream,
+    )
+    camera = register_manual_camera(
+        db,
+        name=payload.name,
+        ip_address=payload.nvr_ip,
+        rtsp_url=rtsp_url,
+        location_label=payload.location_label,
+    )
+    return camera.to_dict()
+
+# Add this to main.py after the other camera endpoints
+
+@app.post("/api/cameras/discover-ip")
+def discover_camera_by_ip(ip_address: str, db: Session = Depends(get_db)):
+    """Discover and register a camera at a specific IP address."""
+    camera = discover_specific_camera(db, ip_address)
+    if not camera:
+        raise HTTPException(status_code=404, detail=f"No ONVIF camera found at {ip_address}")
     return camera.to_dict()
 
 

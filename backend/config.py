@@ -30,7 +30,7 @@ class Settings:
     ATTENDANCE_COOLDOWN_SECONDS: int = int(os.getenv("ATTENDANCE_COOLDOWN_SECONDS", "60"))
 
     # --- Camera discovery ---
-    DISCOVERY_SUBNET: str = os.getenv("DISCOVERY_SUBNET", "192.168.1.0/24")
+    DISCOVERY_SUBNET: str = os.getenv("DISCOVERY_SUBNET", "172.16.0.0/24")
     ONVIF_DISCOVERY_TIMEOUT: float = float(os.getenv("ONVIF_DISCOVERY_TIMEOUT", "4.0"))
     DEFAULT_CAMERA_USER: str = os.getenv("DEFAULT_CAMERA_USER", "admin")
     DEFAULT_CAMERA_PASSWORD: str = os.getenv("DEFAULT_CAMERA_PASSWORD", "")

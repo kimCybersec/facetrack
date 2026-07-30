@@ -15,7 +15,7 @@ import time
 
 import requests
 
-from backend.config import settings
+from config import settings
 
 logger = logging.getLogger("facetrack.relay")
 

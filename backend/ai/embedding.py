@@ -12,7 +12,7 @@ import cv2
 import torch
 from facenet_pytorch import InceptionResnetV1
 
-from backend.config import settings
+from config import settings
 
 _DEVICE = "cuda" if (settings.DETECTION_DEVICE == "cuda" and torch.cuda.is_available()) else "cpu"
 

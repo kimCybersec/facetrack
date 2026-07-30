@@ -20,7 +20,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, declarative_base
 from pgvector.sqlalchemy import Vector
 
-from backend.config import settings
+from config import settings
 
 Base = declarative_base()
 
@@ -41,9 +41,9 @@ class Camera(Base):
     name = Column(String(255), nullable=False)
     manufacturer = Column(String(100), default="ZKTeco")
     model = Column(String(100), nullable=True)
-    ip_address = Column(String(64), nullable=False, unique=True)
+    ip_address = Column(String(64), nullable=False)  # not unique: multiple channels can share one NVR's IP
     onvif_port = Column(Integer, default=80)
-    rtsp_url = Column(String(512), nullable=False)
+    rtsp_url = Column(String(512), nullable=False, unique=True)
     location_label = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=False, nullable=False)
     last_seen_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

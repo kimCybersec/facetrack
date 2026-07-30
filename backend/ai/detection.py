@@ -11,7 +11,7 @@ from typing import List
 import numpy as np
 from ultralytics import YOLO
 
-from backend.config import settings
+from config import settings
 
 
 @dataclass

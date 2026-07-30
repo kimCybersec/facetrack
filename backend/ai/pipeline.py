@@ -18,12 +18,12 @@ import cv2
 import redis
 from sqlalchemy import text
 
-from backend.config import settings
-from backend.ai.detection import FaceDetector
-from backend.ai.embedding import FaceEmbedder
-from backend.database.connection import session_scope
-from backend.database.models import AccessLog, AccessStatus, Student
-from backend.services.relay_service import RelayService
+from config import settings
+from ai.detection import FaceDetector
+from ai.embedding import FaceEmbedder
+from database.connection import session_scope
+from database.models import AccessLog, AccessStatus, Student
+from services.relay_service import RelayService
 
 logger = logging.getLogger("facetrack.pipeline")
 

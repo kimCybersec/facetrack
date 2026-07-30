@@ -68,6 +68,20 @@ export const api = {
     discover: () => request<Camera[]>("/api/cameras/discover"),
     toggle: (id: string, active: boolean) =>
       request<Camera>(`/api/cameras/${id}/toggle?active=${active}`, { method: "PATCH" }),
+    addManual: (payload: {
+      name: string;
+      nvr_ip: string;
+      channel: number;
+      username: string;
+      password: string;
+      port?: number;
+      main_stream?: boolean;
+      location_label?: string;
+    }) =>
+      request<Camera>("/api/cameras/manual", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
   },
   students: {
     list: () => request<Student[]>("/api/students"),

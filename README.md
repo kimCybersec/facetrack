@@ -34,7 +34,7 @@ docker compose up --build
 The backend runs with `network_mode: host` so that ONVIF WS-Discovery's UDP
 multicast probe can actually reach cameras on your physical LAN — this is a
 Linux-only Docker feature. On macOS/Windows hosts, run the backend directly
-with `uvicorn backend.main:app` instead of inside Docker, or connect it to a
+with `uvicorn main:app` instead of inside Docker, or connect it to a
 macvlan network with LAN access.
 
 - Frontend: http://localhost:3000
